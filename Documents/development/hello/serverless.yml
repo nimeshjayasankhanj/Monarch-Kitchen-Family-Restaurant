@@ -1,0 +1,52 @@
+service: hello
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: dev
+  region: us-east-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["TestTable", "Arn" ] }
+  environment:
+    USERS_TABLE: TestTable
+
+functions:
+  createProduct:
+    handler: src/handlers.createProduct 
+    events:
+     - httpApi:
+         path: /product
+         method: post
+
+plugins:
+  - serverless-plugin-typescript
+
+resources:
+  Resources:
+    TestTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: productID
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: productID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: TestTable
