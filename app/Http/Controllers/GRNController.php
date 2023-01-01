@@ -24,63 +24,71 @@ use App\Stock;
 use App\Store;
 use App\Supplier;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GRNController extends Controller
 {
-    public function addGrnIndex(){
+    public function addGrnIndex()
+    {
 
-        $paymentTypes=MetaPayment::where('grn',1)->get();
-        $suppliers=Supplier::where('status',1)->get();
-        $categories=Category::where('status',1)->get();
+        $paymentTypes = MetaPayment::where('grn', 1)->get();
+        $suppliers = Supplier::where('status', 1)->get();
+        $categories = Category::where('status', 1)->get();
 
-        $purchaseOrders=PurchaseOrder::where('status',1)->get();
-        return view('grn.add-grn',['title'=>'Add GRN','categories'=>$categories,'suppliers'=>$suppliers,'paymentTypes'=>$paymentTypes,'purchaseOrders'=>$purchaseOrders]);
+        $purchaseOrders = PurchaseOrder::where('status', 1)->get();
+        return view('grn.add-grn', ['title' => 'Add GRN', 'categories' => $categories, 'suppliers' => $suppliers, 'paymentTypes' => $paymentTypes, 'purchaseOrders' => $purchaseOrders]);
     }
 
-    public function grnHistoryIndex(){
+    public function grnHistoryIndex()
+    {
 
-        $suppliers=Supplier::where('status',1)->get();
-        $grnHistories=MasterGrn::where('status',1)->orderBy('created_at', 'desc')->paginate(10);
-        return view('grn.grn-history',['title'=>'GRN History','grnHistories'=>$grnHistories,'suppliers'=>$suppliers]);
+        $suppliers = Supplier::where('status', 1)->get();
+        $grnHistories = MasterGrn::where('status', 1)->orderBy('created_at', 'desc')->paginate(10);
+        return view('grn.grn-history', ['title' => 'GRN History', 'grnHistories' => $grnHistories, 'suppliers' => $suppliers]);
     }
 
-    public function getProducts(Request $request){
+    public function getProducts(Request $request)
+    {
 
-        $categoryId=$request['categoryId'];
+        $categoryId = $request['categoryId'];
 
-        $products=Product::where('status',1)->where('category_idcategory',$categoryId)->get();
-        $options="";
-        $options .= "<option value='' selected disabled>" . 'Select Product'. "</option>";
+        $products = Product::where('status', 1)->where('category_idcategory', $categoryId)->get();
+        $options = "";
+        $options .= "<option value='' selected disabled>" . 'Select Product' . "</option>";
         foreach ($products as $product) {
-            $options .= "<option value='" . $product->idproduct . "'>" .$product->item_name . "</option>";
+            $options .= "<option value='" . $product->idproduct . "'>" . $product->item_name . "</option>";
         }
         return response()->json($options);
     }
-    public function getTempTableData(){
+    public function getTempTableData()
+    {
 
         $viewAllGrnTemps = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->orderBy('created_at', 'desc')->paginate(10);
         $poId = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->first();
 
-        if ($poId!=null){
-            $getPO=PurchaseOrder::find($poId->purchase_order);
-        }else{
-            $getPO=null;
+        if ($poId != null) {
+            $getPO = PurchaseOrder::find($poId->purchase_order);
+        } else {
+            $getPO = null;
         }
 
         $tableData = '';
-        $total=0;
+        $total = 0;
         if (count($viewAllGrnTemps) != 0) {
             foreach ($viewAllGrnTemps as $viewAllGrnTemp) {
 
                 $total += $viewAllGrnTemp->buying_price * $viewAllGrnTemp->qty;
                 $tableData .= "<tr>";
                 $tableData .= "<td>" . $viewAllGrnTemp->Product->product_name . "</td>";
-              
-                $tableData .= "<td>" . number_format($viewAllGrnTemp->qty, 2)."</td>";
-                $tableData .= "<td style=\"text-align: right\">" . number_format($viewAllGrnTemp->buying_price, 2) . "</td>";
-                $tableData .= "<td style=\"text-align: right\">  " . number_format($viewAllGrnTemp->buying_price * $viewAllGrnTemp->qty, 2) . "</td>";
+
+                $tableData .= "<td>" . number_format($viewAllGrnTemp->qty, 2) . "</td>";
+                $tableData .= "<td style=\"text-align: right\">"
+                    . number_format($viewAllGrnTemp->buying_price, 2) . "</td>";
+                $tableData .= "<td style=\"text-align: right\">  "
+                    . number_format($viewAllGrnTemp->buying_price * $viewAllGrnTemp->qty, 2) . "</td>";
                 $tableData .= "<td style='text-align: center'>";
                 $tableData .= "<button type='button'  class='btn btn-sm btn-warning  waves-effect waves-light'  data-target=\"#updateItemModal\" data-toggle=\"modal\"   data-id='$viewAllGrnTemp->idgrn_temp'   id='editGrn' > ";
                 $tableData .= " <i class=\"fa fa-edit\"></i>";
@@ -88,91 +96,97 @@ class GRNController extends Controller
                 $tableData .= " </td>";
                 $tableData .= "</tr>";
             }
-
         } else {
             $tableData = "<tr><td colspan='8' style='text-align: center'><b>Sorry No Results Found.</b></td></tr>";
-
         }
 
-        return response()->json(['total' => $total, 'tableData' => $tableData,'getPO'=>$getPO]);
-
+        return response()->json(['total' => $total, 'tableData' => $tableData, 'getPO' => $getPO]);
     }
 
     public function tempStore(Request $request)
     {
+        DB::beginTransaction();
+        try {
+            $item = $request['item'];
+            $qtyGrn = $request['qtyGrn'];
+            $category = $request['category'];
 
-        $item = $request['item'];
-        $qtyGrn = $request['qtyGrn'];
-        $category = $request['category'];
+            $bPrice = Product::find($item);
 
-        $bPrice=Product::find($item);
+            $rules = \Validator::make($request->all(), [
 
-        $rules = \Validator::make($request->all(), [
+                'category' => 'required',
+                'item' => 'required',
+                'qtyGrn' => 'required||not_in:0',
 
-            'category' => 'required',
-            'item' => 'required',
-            'qtyGrn' => 'required||not_in:0',
+            ], [
+                'item.required' => 'Product should be provided!',
+                'category.required' => 'Category should be provided!',
+                'qtyGrn.required' => 'Qty should be provided!',
+                'qtyGrn.not_in' => 'Qty should be  more than 0!',
 
-        ], [
-            'item.required' => 'Product should be provided!',
-            'category.required' => 'Category should be provided!',
-            'qtyGrn.required' => 'Qty should be provided!',
-            'qtyGrn.not_in' => 'Qty should be  more than 0!',
+            ]);
+            if ($rules->fails()) {
+                return response()->json(['errors' => $rules->errors()->all()]);
+            }
 
-        ]);
-        if ($rules->fails()) {
-            return response()->json(['errors' => $rules->errors()->all()]);
-        }
-
-            $isExist = GRNTemp::where('product_idproduct','=', $item)->where('master_user_idmaster_user','=', Auth::user()->idmaster_user)
-            ->where('status', 1)
-                ->where('buying_price', '=',$bPrice->buying_price)
+            $isExist = GRNTemp::where('product_idproduct', '=', $item)
+                ->where('master_user_idmaster_user', '=', Auth::user()->idmaster_user)
+                ->where('status', 1)
+                ->where('buying_price', '=', $bPrice->buying_price)
                 ->where('category_idcategory', '=', $category)
                 ->first();
 
 
-        if ($isExist != null) {
-            $isExist->qty += $qtyGrn;
-            $isExist->save();
-        } else {
-            $grnTempSave = new GRNTemp();
-            $grnTempSave->buying_price = $bPrice->buying_price;
-            $grnTempSave->qty = $qtyGrn;
-            $grnTempSave->product_idproduct = $item;
-            $grnTempSave->category_idcategory = $category;
-            $grnTempSave->master_user_idmaster_user = Auth::user()->idmaster_user;
-            $grnTempSave->status = '1';
-            $grnTempSave->save();
+            if ($isExist != null) {
+                $isExist->qty += $qtyGrn;
+                $isExist->save();
+            } else {
+                $grnTempSave = new GRNTemp();
+                $grnTempSave->buying_price = $bPrice->buying_price;
+                $grnTempSave->qty = $qtyGrn;
+                $grnTempSave->product_idproduct = $item;
+                $grnTempSave->category_idcategory = $category;
+                $grnTempSave->master_user_idmaster_user = Auth::user()->idmaster_user;
+                $grnTempSave->status = '1';
+                $grnTempSave->save();
+            }
+            DB::commit();
+            return response()->json(['success' => 'Products added to table successfully']);
+        } catch (Exception $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        return response()->json(['success' => 'Products added to table successfully']);
     }
 
     public function deleteGrnTemp(Request $request)
     {
-        $dGrnId = $request['dGrnId'];
-        $grnDelete= GRNTemp::find($dGrnId);
-        if ($grnDelete!=null){
-            $grnDelete->delete();
+        DB::beginTransaction();
+        try {
+            $dGrnId = $request['dGrnId'];
+            $grnDelete = GRNTemp::find($dGrnId);
+            if ($grnDelete != null) {
+                $grnDelete->delete();
+            }
+            DB::commit();
+            return response()->json(['success' => 'Products deleted successfully']);
+        } catch (Exception $th) {
+            DB::rollBack();
+            throw $th;
         }
-        return response()->json(['success' => 'Products deleted successfully']);
     }
 
     public function store(Request $request)
     {
 
-        $PoNoId=$request['poNo'];
-        $discount = $request['discount'];
-        $paymentType = $request['paymentType'];
-        $paid = $request['paid'];
-        $bankId = $request['bankId'];
-        $bankAccountNo = $request['bankAccountNo'];
-        $bankAccount = $request['bankAccount'];
-        $discountType = $request['discountType'];
-        $systemDate = Carbon::now()->format('y/m/d');
-        $visaBill=$request['visaBill'];
-        $cardAmount=$request['cardAmount'];
-
+        DB::beginTransaction();
+        try {
+            $PoNoId = $request['poNo'];
+            $discount = $request['discount'];
+            $paymentType = $request['paymentType'];
+            $paid = $request['paid'];
+            $discountType = $request['discountType'];
+            $systemDate = Carbon::now()->format('y/m/d');
 
             $validator = \Validator::make($request->all(), [
 
@@ -182,80 +196,79 @@ class GRNController extends Controller
 
             ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
-        }
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()->all()]);
+            }
 
-        $totalPrice = 0;
-        $grnItemPrices = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
+            $totalPrice = 0;
+            $grnItemPrices = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
 
-        foreach ($grnItemPrices as $grnItemPrice) {
-            $totalPrice += $grnItemPrice->qty * $grnItemPrice->buying_price;
-        }
+            foreach ($grnItemPrices as $grnItemPrice) {
+                $totalPrice += $grnItemPrice->qty * $grnItemPrice->buying_price;
+            }
 
-        if ($discountType == 1) {
-            $discount = floatval($totalPrice) * floatval($discount);
-            $netTotal = floatval($totalPrice) - floatval($discount);
-        } else {
+            if ($discountType == 1) {
+                $discount = floatval($totalPrice) * floatval($discount);
+                $netTotal = floatval($totalPrice) - floatval($discount);
+            } else {
 
-            $netTotal = floatval($totalPrice) - floatval($discount);
-        }
+                $netTotal = floatval($totalPrice) - floatval($discount);
+            }
 
-        if ($paymentType == 1 || $paymentType == 2) {
+            if ($paymentType == 1 || $paymentType == 2) {
 
-            if ($paymentType == 1) {
-                if ($paid == 0) {
-                    return response()->json(['errors' => ['error' => 'Paid Amount should be provided.']]);
-                }
-                if ($paid < $netTotal) {
-                    return response()->json(['f' => $paid, 'r' => $netTotal, '$discountType' => $discount, 'errors' => ['error' => 'Paid Amount is lower than net total.']]);
-                }
-                if ($paid > $netTotal) {
-                    return response()->json(['r' => ($paid > $netTotal), 'errors' => ['error' => 'Paid Amount is greater than net total.']]);
-                }
-            } else if ($paymentType == 1) {
-                if ($paid > $netTotal) {
-                    return response()->json(['r' => ($paid > $netTotal), 'errors' => ['error' => 'Paid Amount is greater than net total.']]);
+                if ($paymentType == 1) {
+                    if ($paid == 0) {
+                        return response()->json(['errors' => ['error' => 'Paid Amount should be provided.']]);
+                    }
+                    if ($paid < $netTotal) {
+                        return response()->json(['f' => $paid, 'r' => $netTotal, '$discountType' => $discount, 'errors' => ['error' => 'Paid Amount is lower than net total.']]);
+                    }
+                    if ($paid > $netTotal) {
+                        return response()->json(['r' => ($paid > $netTotal), 'errors' => ['error' => 'Paid Amount is greater than net total.']]);
+                    }
+                } else if ($paymentType == 1) {
+                    if ($paid > $netTotal) {
+                        return response()->json(['r' => ($paid > $netTotal), 'errors' => ['error' => 'Paid Amount is greater than net total.']]);
+                    }
                 }
             }
 
-        } 
+            $countGrnTemp = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
 
-        $countGrnTemp = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
+            if (count($countGrnTemp) == 0) {
+                return response()->json(['errors' => ['error' => 'No items available to save.']]);
+            }
 
-        if (count($countGrnTemp) == 0) {
-            return response()->json(['errors' => ['error' => 'No items available to save.']]);
-        }
+            $getPO = PurchaseOrder::find($PoNoId);
 
-        $getPO=PurchaseOrder::find($PoNoId);
-
-        $saveGrn = new MasterGrn();
-        $saveGrn->meta_payment = $paymentType;
-        $saveGrn->supplier_idsupplier = $getPO->supplier_idsupplier;
-        $saveGrn->total = $totalPrice;
-        $saveGrn->discount = $discount;
-        $saveGrn->date = $systemDate;
-        $saveGrn->purchase_order_idpurchase_order = $PoNoId;
-        $saveGrn->master_user_idmaster_user=Auth::user()->iduser_master;
+            $saveGrn = new MasterGrn();
+            $saveGrn->meta_payment = $paymentType;
+            $saveGrn->supplier_idsupplier = $getPO->supplier_idsupplier;
+            $saveGrn->total = $totalPrice;
+            $saveGrn->discount = $discount;
+            $saveGrn->date = $systemDate;
+            $saveGrn->purchase_order_idpurchase_order = $PoNoId;
+            $saveGrn->master_user_idmaster_user = Auth::user()->iduser_master;
 
 
-        if ($paymentType == 1) {
-            $saveGrn->paid = $paid;
-            $saveGrn->due = 0;
-        } 
-       
-        $saveGrn->status = '1';
-        $saveGrn->save();
+            if ($paymentType == 1) {
+                $saveGrn->paid = $paid;
+                $saveGrn->due = 0;
+            }
 
-        $poCompleted=PurchaseOrder::find($PoNoId);
-        $poCompleted->status=2;
-        $poCompleted->save();
+            $saveGrn->status = '1';
+            $saveGrn->save();
+
+            $poCompleted = PurchaseOrder::find($PoNoId);
+            $poCompleted->status = 2;
+            $poCompleted->save();
 
 
-        
-        $grnItemTemps = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
 
-        foreach ($grnItemTemps as $grnItemTemp) {
+            $grnItemTemps = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->get();
+
+            foreach ($grnItemTemps as $grnItemTemp) {
 
                 $saveStockTable = new Stock();
                 $saveStockTable->base = 1;
@@ -269,21 +282,25 @@ class GRNController extends Controller
                 $saveStockTable->save();
 
 
-            $grnItemTemp->delete();
+                $grnItemTemp->delete();
+            }
+
+            $savePayment = new Payment();
+            $savePayment->base = 1;
+            $savePayment->id = $saveGrn->idmaster_grn;
+            $savePayment->totalAmount = $netTotal;
+
+            if ($paymentType == 1) {
+                $savePayment->cash = $paid;
+            }
+            $savePayment->status = '1';
+            $savePayment->save();
+            DB::commit();
+            return response()->json(['success' => 'GRN saved successfully']);
+        } catch (Exception $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-        $savePayment = new Payment();
-        $savePayment->base = 1;
-        $savePayment->id = $saveGrn->idmaster_grn;
-        $savePayment->totalAmount = $netTotal;
-       
-        if ($paymentType == 1) {
-            $savePayment->cash = $paid;
-        } 
-        $savePayment->status = '1';
-        $savePayment->save();
-
-        return response()->json(['success' => 'GRN saved successfully']);
     }
 
     public function getMoreByGrnID(Request $request)
@@ -304,7 +321,6 @@ class GRNController extends Controller
         $tableData .= "</tr>";
 
         return response()->json(['tableData' => $tableData]);
-
     }
 
     public function getByID(Request $request)
@@ -317,8 +333,8 @@ class GRNController extends Controller
         foreach ($getStockDetails as $getStockDetail) {
             $tableData .= "<tr>";
             $tableData .= "<td>" . $getStockDetail->Product->product_name . "</td>";
-            $measurementId=Product::find($getStockDetail->product_idproduct);
-           
+            $measurementId = Product::find($getStockDetail->product_idproduct);
+
             $tableData .= "<td >" . number_format($getStockDetail->qty_grn, 2) . "</td>";
             $tableData .= "<td style=\"text-align: right\">" . number_format($getStockDetail->bp, 2) . "</td>";
             $tableData .= "</tr>";
@@ -363,27 +379,25 @@ class GRNController extends Controller
             'id' => $request['id'],
         ));
         return view('grn.grn-history', ['title' => 'GRN History', 'grnHistories' => $grnHistories, 'suppliers' => $suppliers]);
-
-
     }
 
-    public function getPOByDetails(Request $request){
-        $POId=$request['POId'];
+    public function getPOByDetails(Request $request)
+    {
+        $POId = $request['POId'];
 
-        $getGrnTemps=GRNTemp::where('master_user_idmaster_user',Auth::user()->iduser_master)->where('purchase_order','!=',$POId)->where('status',1)->get();
-        if (count($getGrnTemps)!=null){
+        $getGrnTemps = GRNTemp::where('master_user_idmaster_user', Auth::user()->iduser_master)->where('purchase_order', '!=', $POId)->where('status', 1)->get();
+        if (count($getGrnTemps) != null) {
 
-            foreach ($getGrnTemps as $getGrnTemp){
+            foreach ($getGrnTemps as $getGrnTemp) {
                 $getGrnTemp->delete();
             }
-
         }
 
 
-        $getPurchaseItems=PurchaseOrderReg::where('purchase_order_idpurchase_order',$POId)->where('status',1)->get();
+        $getPurchaseItems = PurchaseOrderReg::where('purchase_order_idpurchase_order', $POId)->where('status', 1)->get();
 
 
-        foreach ($getPurchaseItems as $getPurchaseItem){
+        foreach ($getPurchaseItems as $getPurchaseItem) {
 
             $grnTempSave = new GRNTemp();
             $grnTempSave->buying_price = $getPurchaseItem->bp;
@@ -393,53 +407,57 @@ class GRNController extends Controller
             $grnTempSave->status = '1';
             $grnTempSave->purchase_order = $POId;
             $grnTempSave->save();
-
-
         }
 
-        $getPO=PurchaseOrder::find($POId);
+        $getPO = PurchaseOrder::find($POId);
         return response()->json(['po' => $getPO]);
     }
 
-    public function getTempProductId(Request $request){
+    public function getTempProductId(Request $request)
+    {
 
 
-        $productId=$request['productId'];
-        $getTempItem=GRNTemp::find($productId);
+        $productId = $request['productId'];
+        $getTempItem = GRNTemp::find($productId);
 
         return response()->json($getTempItem);
-
     }
 
-    public function updateTempProduct(Request $request){
+    public function updateTempProduct(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $uQty = $request['uQty'];
+            $uBp = $request['uBp'];
+            $hiddenProId = $request['hiddenProId'];
 
-        $uQty=$request['uQty'];
-        $uBp=$request['uBp'];
-        $hiddenProId=$request['hiddenProId'];
+            $rules = \Validator::make($request->all(), [
 
-        $rules = \Validator::make($request->all(), [
+                'uQty' => 'required||not_in:0',
+                'uBp' => 'required||not_in:0',
 
-            'uQty' => 'required||not_in:0',
-            'uBp' => 'required||not_in:0',
+            ], [
 
-        ], [
+                'uQty.required' => 'Qty should be provided!',
+                'uQty.not_in' => 'Qty should be  more than 0!',
+                'uBp.required' => 'Buying Price should be provided!',
+                'uBp.not_in' => 'Buying Price should be  more than 0!',
 
-            'uQty.required' => 'Qty should be provided!',
-            'uQty.not_in' => 'Qty should be  more than 0!',
-            'uBp.required' => 'Buying Price should be provided!',
-            'uBp.not_in' => 'Buying Price should be  more than 0!',
+            ]);
+            if ($rules->fails()) {
+                return response()->json(['errors' => $rules->errors()->all()]);
+            }
 
-        ]);
-        if ($rules->fails()) {
-            return response()->json(['errors' => $rules->errors()->all()]);
+
+            $updateGrnTemp = GRNTemp::find($hiddenProId);
+            $updateGrnTemp->buying_price = $uBp;
+            $updateGrnTemp->qty = $uQty;
+            $updateGrnTemp->update();
+            DB::commit();
+            return \response()->json(['success' => 'Product updated successfully']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
         }
-
-
-        $updateGrnTemp=GRNTemp::find($hiddenProId);
-        $updateGrnTemp->buying_price=$uBp;
-        $updateGrnTemp->qty=$uQty;
-        $updateGrnTemp->update();
-
-        return \response()->json(['success'=>'Product updated successfully']);
     }
 }
