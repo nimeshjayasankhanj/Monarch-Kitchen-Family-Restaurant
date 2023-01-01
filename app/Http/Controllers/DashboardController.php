@@ -18,6 +18,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        return view('index', ['title' => 'Dashboard', 'Pending' => 0, 'accepted' => 0, 'completed' => 0]);
+
 
         if (Auth::user()->user_role_iduser_role == 2) {
             $Pending = MasterBooking::where('status', 0)->where('user_master_iduser_master', Auth::user()->iduser_master)->count('idmaster_booking');

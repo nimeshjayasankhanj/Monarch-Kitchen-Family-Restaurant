@@ -8,6 +8,7 @@ use App\UserRole;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SecurityController extends Controller
 {
@@ -19,7 +20,7 @@ class SecurityController extends Controller
             $this->validate($request, ['username' => 'required', 'password' => 'required|min:3']);
 
             $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request->get('password'), "Nova6566", 256));
-
+            Log::debug(json_encode($advanceEncryption));
             $user = User::where('user_name', $request->get('username'))
                 ->where('password', $advanceEncryption->encrypt())->exists();
             if ($user === true) {

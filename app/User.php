@@ -10,6 +10,11 @@ class User extends Authenticatable
     use Notifiable;
 
 
-    protected $table = 'master_user';
-    protected  $primaryKey = 'idmaster_user';
+    protected $table = 'user_master';
+    protected  $primaryKey = 'iduser_master';
+
+    public function userRole()
+    {
+        return $this->belongsTo(UserRole::class);
+    }
 }

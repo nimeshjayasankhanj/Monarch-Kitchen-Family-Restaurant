@@ -33,7 +33,7 @@
                             </span></a>
                     </li>
 
-                    @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 3)
+                    {{-- @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 3)
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-book"
                                     aria-hidden="true"></i><span>Tasks<span class="pull-right"><i
@@ -49,9 +49,9 @@
 
                             </ul>
                         </li>
-                    @endif
+                    @endif --}}
 
-                    @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 2)
+                    {{-- @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 2)
                         <li class="menu-title">INVOICE SECTION</li>
                         <li>
                             <a href="{{ route('make-a-booking') }}" class="waves-effect"><i class="fa fa-book"
@@ -82,9 +82,9 @@
 
 
 
-                    @endif
+                    @endif --}}
 
-                    @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 1)
+                    {{-- @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 1)
                         <li class="menu-title">INVOICE SECTION</li>
                         <li>
                             <a href="{{ route('invoice-history') }}" class="waves-effect"><i class="fa fa-book"
@@ -154,7 +154,7 @@
 
 
                             </ul>
-                        </li>
+                        </li> --}}
 
 
 
@@ -162,7 +162,7 @@
 
 
 
-
+                    @if (\Illuminate\Support\Facades\Auth::user()->user_role_iduser_role == 1)
                         <li class="menu-title">USER MANAGEMENT</li>
 
                         <li class="has_sub">
@@ -170,19 +170,11 @@
                                     aria-hidden="true"></i><span>Users<span class="pull-right"><i
                                             class="mdi mdi-chevron-right"></i></span> </span></a>
                             <ul class="list-unstyled">
-
-                                <li>
-                                    <a href="add-employee" class="waves-effect"><span>Add Driver</span></a>
-                                </li>
                                 <li>
                                     <a href="view-users" class="waves-effect"><span>View Users</span></a>
                                 </li>
                             </ul>
                         </li>
-
-
-
-
                         <li class="menu-title">PRODUCT INVENTORY</li>
 
                         <li class="has_sub">
@@ -199,13 +191,11 @@
                                 </li>
                             </ul>
                         </li>
-
                         <li class="menu-title">SUPPLIER </li>
                         <li>
                             <a href="suppliers" class="waves-effect"><i
                                     class="fa fa-user"></i><span>Suppliers</span></a>
                         </li>
-
                         <li class="menu-title">PURCHASING INVENTORY</li>
 
                         <li class="has_sub">
@@ -219,7 +209,6 @@
                                 <li><a href="completed-po">Completed Purchase Order</a></li>
                             </ul>
                         </li>
-
                         <li class="has_sub">
                             <a href="javascript:void(0);" class="waves-effect"><i
                                     class="fa fa-suitcase"></i><span>GRN<span class="pull-right"><i
@@ -229,15 +218,15 @@
                                 <li><a href="grn-history">GRN History</a></li>
                             </ul>
                         </li>
-
-
-                        <li class="menu-title">USER MANAGEMENT</li>
-
-                        <li>
-                            <a href="{{ route('view-customers') }}" class="waves-effect"><i class="fa fa-user"
-                                    aria-hidden="true"></i><span>Profile </span></a>
-                        </li>
                     @endif
+
+                    {{-- 
+                    <li class="menu-title">USER MANAGEMENT</li>
+
+                    <li>
+                        <a href="{{ route('view-customers') }}" class="waves-effect"><i class="fa fa-user"
+                                aria-hidden="true"></i><span>Profile </span></a>
+                    </li> --}}
                 </ul>
             </div>
             <div class="clearfix"></div>

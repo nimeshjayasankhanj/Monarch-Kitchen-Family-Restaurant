@@ -8,56 +8,61 @@ use App\Category;
 use App\Customer;
 use App\MainCategory;
 use App\Measurement;
+use Exception;
 use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MainCategoryController extends Controller
 {
-    public function categoriesIndex(Request $request){
+    public function categoriesIndex(Request $request)
+    {
 
-        $Categories=Category::all();
+        $Categories = Category::all();
 
-        return view('category.categories',['title'=>'categories','categories'=>$Categories]);
+        return view('category.categories', ['title' => 'categories', 'categories' => $Categories]);
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $category = $request['category'];
+            $validator = \Validator::make($request->all(), [
+                'category' => 'required|max:20',
+            ], [
+                'category.required' => 'Category should be provided!',
+                'category.max' => 'Category must be less than 20 characters long.',
+            ]);
 
-        $category=$request['category'];
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()->all()]);
+            }
+            $categoryExist = Category::where('category_name', $category)->first();
 
-        $validator = \Validator::make($request->all(), [
+            if ($categoryExist != null) {
 
-            'category' => 'required|max:20',
-        ], [
-            'category.required' => 'Category should be provided!',
-            'category.max' => 'Category must be less than 20 characters long.',
-        ]);
+                return \response()->json(['errors' => ['a' => 'Category already exist.']]);
+            }
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->all()]);
+            $save = new Category();
+            $save->category_name = $category;
+            $save->status = '1';
+            $save->save();
+            DB::commit();
+            return \response()->json(['success' => 'Category saved successfully']);
+        } catch (Exception $th) {
+            DB::rollBack();
+            throw $th;
         }
-        $categoryExist = Category::where('category_name', strtoupper($category))->first();
-
-        if($categoryExist!=null){
-
-            return \response()->json(['errors' => ['a' => 'Category already exist.']]);
-        }
-
-        $save=new Category();
-        $save->category_name=strtoupper($category);
-        $save->status='1';
-        $save->user_master_iduser_master=Auth::user()->iduser_master;
-        $save->save();
-
-       
-
-       return \response()->json(['success'=>'Category saved successfully']);
     }
 
-    public function update(Request $request){
+    public function update(Request $request)
+    {
 
-        $uCategory=$request['uCategory'];
-        $hiddenCatId=$request['hiddenCatId'];
+        $uCategory = $request['uCategory'];
+        $hiddenCatId = $request['hiddenCatId'];
         $validator = \Validator::make($request->all(), [
 
             'uCategory' => 'required|max:20',
@@ -69,18 +74,17 @@ class MainCategoryController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()]);
         }
-        $categoryExist = Category::where('category_name', strtoupper($uCategory))->where('idcategory','!=',$hiddenCatId)->first();
+        $categoryExist = Category::where('category_name', strtoupper($uCategory))->where('idcategory', '!=', $hiddenCatId)->first();
 
-        if($categoryExist!=null){
+        if ($categoryExist != null) {
 
             return \response()->json(['errors' => ['a' => 'Category already exist.']]);
         }
 
-        $update=Category::find($hiddenCatId);
-        $update->category_name=strtoupper($uCategory);
+        $update = Category::find($hiddenCatId);
+        $update->category_name = strtoupper($uCategory);
         $update->update();
 
-        return \response()->json(['success'=>'Category updated successfully']);
+        return \response()->json(['success' => 'Category updated successfully']);
     }
-
 }
