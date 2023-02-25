@@ -39,7 +39,7 @@ class UserController extends Controller
             'contactNo' => 'required|max:10|min:10',
             'username' => 'required|email',
             'password' => 'required|min:9',
-
+            'address' => 'required',
         ], [
             'fName.required' => 'First Name should be provided!',
             'fName.max' => 'Last Name must be less than 115 characters.',
@@ -52,13 +52,13 @@ class UserController extends Controller
             'username.email' => 'User name should be valid email address!',
             'password.max' => 'Password must be include 9 number.',
             'password.required' => 'Password should be provided.',
-
+            'address.required' => 'Address should be provided.',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()]);
         }
 
-        if (User::where('username', strtolower($request['username']))->first()) {
+        if (User::where('user_name', strtolower($request['username']))->first()) {
             return response()->json(['errorUser' => ['error' => 'User Name already exists.']]);
         }
 
@@ -66,11 +66,12 @@ class UserController extends Controller
         $save->first_name = strtoupper($request['fName']);
         $save->last_name = strtoupper($request['lName']);
         $save->contact_no = $request['contactNo'];
-        $save->username = $request['username'];
+        $save->user_name = $request['username'];
+        $save->address = $request['address'];
         $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request['password'], "Nova6566", 256));
         $save->password = $advanceEncryption->encrypt();
         $save->status = 1;
-        $save->user_role_iduser_role = 3;
+        $save->user_role_iduser_role = 2;
         $save->save();
 
         return response()->json(['success' => 'Driver saved successfully.']);
@@ -116,7 +117,7 @@ class UserController extends Controller
             $save = new User();
             $save->first_name = strtoupper($request['fName']);
             $save->last_name = strtoupper($request['lName']);
-            $save->phone_number = $request['contactNo'];
+            $save->contact_no = $request['contactNo'];
             $save->user_name = $request['username'];
             $save->address = $request['address'];
             $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request['password'], "Nova6566", 256));
@@ -189,7 +190,7 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()]);
         }
 
-        $getUserid = User::where('username', $request['userName'])->first();
+        $getUserid = User::where('user_name', $request['userName'])->first();
 
         $advanceEncryption = (new  \App\MyResources\AdvanceEncryption($request['password'], "Nova6566", 256));
 
@@ -244,5 +245,10 @@ class UserController extends Controller
 
 
         return response()->json(['success' => 'Customer updated successfully.']);
+    }
+
+    public function addDriver()
+    {
+        return view('users.add-user', ['title' => 'Create Driver']);
     }
 }

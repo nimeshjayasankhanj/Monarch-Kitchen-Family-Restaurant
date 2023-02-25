@@ -37,7 +37,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
 
 
-          
+
         ],
 
         'api' => [
@@ -62,7 +62,9 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'admin'=> \App\Http\Middleware\Admin::class,
-        'customer'=> \App\Http\Middleware\Customer::class,
+        'admin' => \App\Http\Middleware\Admin::class,
+        'customer' => \App\Http\Middleware\Customer::class,
+        'customer-admin' => \App\Http\Middleware\CustomerAdmin::class,
+        'driver-admin' => \App\Http\Middleware\DriverAdmin::class,
     ];
 }

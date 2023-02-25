@@ -19,7 +19,7 @@ class ProductController extends Controller
         $productViews = Product::all();
         $categories = Category::where('status', 1)->get();
 
-        return view('product.products', ['title' => 'Products', 'categories' => $categories, 'productViews' => $productViews]);
+        return view('product.products', ['title' => 'Ingredients', 'categories' => $categories, 'productViews' => $productViews]);
     }
 
     public function store(Request $request)
@@ -29,7 +29,7 @@ class ProductController extends Controller
             $pName = $request['pName'];
             $category = $request['category'];
             $buyingPrice = $request['buyingPrice'];
-            $descption = $request['descption'];
+            $descption = $request['description'];
 
 
             $validator = \Validator::make($request->all(), [
@@ -62,7 +62,7 @@ class ProductController extends Controller
             $saveProduct->status = '1';
             $saveProduct->save();
             DB::commit();
-            return response()->json(['success' => 'Product saved successfully.']);
+            return response()->json(['success' => 'Ingredient saved successfully.']);
         } catch (Exception $th) {
             DB::rollBack();
             throw $th;
@@ -118,7 +118,7 @@ class ProductController extends Controller
             $updateProduct->buying_price = $uBuyingPrice;
             $updateProduct->update();
             DB::commit();
-            return response()->json(['success' => 'Product updated successfully.']);
+            return response()->json(['success' => 'Ingredient updated successfully.']);
         } catch (Exception $th) {
             DB::rollBack();
             throw $th;

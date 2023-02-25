@@ -6,190 +6,88 @@ namespace App\Http\Controllers;
 use App\Invoice;
 use App\MainCategory;
 use App\MasterBooking;
+use App\Order;
 use App\Product;
 use App\Stock;
+use App\Supplier;
 use App\User;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-        public function pendingOrdersIndex(Request $request){
+    public function orderReport(Request $request)
+    {
 
+        $orderID = $request['orderID'];
+        $date = $request['date'];
+        $status = $request['status'];
+        $type = $request['type'];
 
-            $orderID = $request['orderID'];
-            $customer = $request['customer'];
-            $date = $request['date'];
-           
-            $query = MasterBooking::query();
-    
-            
-            if (!empty($orderID)) {
-    
-                $query = $query->where('idmaster_booking', $orderID);
-            }
-            if (!empty($customer)) {
-    
-                $query = $query->where('user_master_iduser_master', $customer);
-            }
-    
+        $query = Order::query();
 
-            if (!empty($date)) {
-                $date = date('Y-m-d', strtotime($request['date']));
-               
-                $query = $query->where('date',$date);
-            }
-            
-            $orders = $query->where('status', 0)->get();
-            $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
-
-            return view('reports.pending-orders',['title'=>'Pending Orders','orders'=>$orders,'customers'=>$customers]);
+        if (!empty($orderID)) {
+            $query = $query->where('idorder', $orderID);
+        }
+        if ($status != null) {
+            $query = $query->where('status', $status);
+        }
+        if (!empty($type)) {
+            $query = $query->where('type', $type);
+        }
+        if (!empty($date)) {
+            $date = date('Y-m-d', strtotime($request['date']));
+            $query = $query->where('date', $date);
         }
 
-        public function incomeOrderIndex(Request $request){
+        $orders = $query->get();
 
-            $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
-            
-            
-            $invoiceID = $request['invoiceID'];
-            $orderID = $request['orderID'];
-            $customer = $request['customer'];
-            $date = $request['date'];
-           
-            $query = Invoice::query();
-    
-            if ($invoiceID) {
-                $query = $query->where('idinvoice', $invoiceID);
-            }
-            if (!empty($orderID)) {
-    
-                $query = $query->where('master_booking_idmaster_booking', $orderID);
-            }
-            if (!empty($customer)) {
-    
-                $query = $query->where('customer', $customer);
-            }
-    
+        return view('reports.order-report', ['title' => 'Order Report', 'orders' => $orders]);
+    }
 
-            if (!empty($date)) {
-                $date = date('Y-m-d', strtotime($request['date']));
-               
-                $query = $query->where('date',$date);
-            }
-            
-            $incomes = $query->where('status', 1)->get();
-    
-           
-            return view('reports.income-report',['incomes'=>$incomes,'title'=>'Income Report','customers'=>$customers]);
+    public function customerReport(Request $request)
+    {
+        $name = $request['name'];
+        $contactNo = $request['contact_no'];
+        $address = $request['address'];
+
+        $query = User::query();
+
+        if (!empty($name)) {
+            $query = $query->where('first_name', 'LIKE', '%' . $name . '%')->orWhere('last_name', 'LIKE', '%' . $name . '%');
+        }
+        if (!empty($contactNo)) {
+            $query = $query->where('contact_no', 'LIKE', '%' . $contactNo . '%');
+        }
+        if (!empty($address)) {
+            $query = $query->where('address', 'LIKE', '%' . $address . '%');
         }
 
-        public function acceptedOrdersIndex(Request $request){
+        $customers = $query->get();
 
-            $orderID = $request['orderID'];
-            $customer = $request['customer'];
-            $date = $request['date'];
-           
-            $query = MasterBooking::query();
-    
-            
-            if (!empty($orderID)) {
-    
-                $query = $query->where('idmaster_booking', $orderID);
-            }
-            if (!empty($customer)) {
-    
-                $query = $query->where('user_master_iduser_master', $customer);
-            }
-    
+        return view('reports.customer-report', ['title' => 'Customer Report', 'customers' => $customers]);
+    }
 
-            if (!empty($date)) {
-                $date = date('Y-m-d', strtotime($request['date']));
-               
-                $query = $query->where('date',$date);
-            }
-            
-            $orders = $query->where('status', 1)->get();
-       
-            $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
+    public function supplierReport(Request $request)
+    {
+        $poNo = $request['poNo'];
+        $grnNo = $request['grnNo'];
+        $item = $request['item'];
 
-            return view('reports.accepted-orders',['title'=>'Accepted Orders','orders'=>$orders,'customers'=>$customers]);
+        $query = Supplier::query();
+
+        if (!empty($poNo)) {
+            $query = $query->whereHas('PurchaseOrder', function ($query) use ($poNo) {
+                $query->where('idpurchase_order', $poNo);
+            });
+        }
+        if (!empty($grnNo)) {
+            $query = $query->whereHas('MasterGrn', function ($query) use ($grnNo) {
+                $query->where('idmaster_grn', $grnNo);
+            });
         }
 
-        public function completedOrdersIndex(Request $request){
+        $suppliers = $query->get();
 
-            $orderID = $request['orderID'];
-            $customer = $request['customer'];
-            $date = $request['date'];
-           
-            $query = MasterBooking::query();
-    
-            
-            if (!empty($orderID)) {
-    
-                $query = $query->where('idmaster_booking', $orderID);
-            }
-            if (!empty($customer)) {
-    
-                $query = $query->where('user_master_iduser_master', $customer);
-            }
-    
-
-            if (!empty($date)) {
-                $date = date('Y-m-d', strtotime($request['date']));
-               
-                $query = $query->where('date',$date);
-            }
-            
-            $orders = $query->where('status', 3)->get();
-       
-            $customers=User::where('status',1)->where('user_role_iduser_role',2)->get();
-
-            return view('reports.completed-orders',['title'=>'Completed Orders','orders'=>$orders,'customers'=>$customers]);
-        }
-
-        public function activeStockIndex(Request $request){
-
-
-            $productId = $request['productId'];
-           
-            $query = Stock::query();
-    
-            
-            if (!empty($productId)) {
-    
-                $query = $query->where('product_idproduct', $productId);
-            }
-           
-            
-            $stocks = $query->where('status', 1)->get();
-            
-            $products=Product::where('status',1)->get();
-
-            return view('reports.active-stock',['title'=>'Active Stock','stocks'=>$stocks,'products'=>$products]);
-        }
-
-        public function deactiveStockIndex(Request $request){
-
-            $productId = $request['productId'];
-           
-            $query = Stock::query();
-    
-            
-            if (!empty($productId)) {
-    
-                $query = $query->where('product_idproduct', $productId);
-            }
-           
-            
-            $stocks = $query->where('status', 0)->get();
-            
-            $products=Product::where('status',1)->get();
-
-            return view('reports.deactive-stock',['title'=>'Deactive Stock','stocks'=>$stocks,'products'=>$products]);
-        }
-
-
-        
-        
-
-
+        return view('reports.supplier-report', ['title' => 'Customer Report', 'suppliers' => $suppliers]);
+    }
 }

@@ -37,10 +37,10 @@
                                 width="100%">
                                 <thead>
                                     <tr>
-                                        <th>FIRST NAME</th>
-                                        <th>LAST NAME</th>
-                                        <th>CONTACT NO</th>
-                                        <th>STATUS</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Contact No</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
 
@@ -51,14 +51,8 @@
                                         <tr>
                                             <td>{{ $user->first_name }}</td>
                                             <td>{{ $user->last_name }}</td>
-                                            <td>{{ $user->phone_number }}</td>
-                                            @if ($user->status === 1)
-                                                <td>Active</td>
-                                            @else
-                                                <td>
-                                                    <button class="btn btn-primary btn-sm">Send Email</button>
-                                                </td>
-                                            @endif
+                                            <td>{{ $user->contact_no }}</td>
+                                            <td>Active</td>
                                         </tr>
                                     @endforeach
 

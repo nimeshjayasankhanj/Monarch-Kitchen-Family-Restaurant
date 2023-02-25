@@ -1,18 +1,4 @@
 @include('includes/header_start')
-
-<link href="{{ URL::asset('assets/plugins/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/datatables/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<!-- Responsive datatable examples -->
-<link href="{{ URL::asset('assets/plugins/datatables/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/sweet-alert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css">
-<!-- Plugins css -->
-<link href="{{ URL::asset('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css')}}" rel="stylesheet">
-<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}" rel="stylesheet">
-<link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css')}}" rel="stylesheet"/>
-<link href="{{ URL::asset('assets/css/custom_checkbox.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/css/jquery.notify.css')}}" rel="stylesheet" type="text/css">
-<meta name="csrf-token" content="{{ csrf_token() }}"/>
 @include('includes.header_end')
 
 <!-- Page title -->
@@ -54,11 +40,11 @@
                                 <thead>
                                 <tr>
                                     <th>PO NO</th>
-                                    <th>SUPPLIER</th>
-                                    <th>TOTAL</th>
-                                    <th>DATE</th>
-                                    <th>CREATED AT</th>
-                                    <th>OPTION</th>
+                                    <th>Supplier</th>
+                                    <th>Total</th>
+                                    <th>Date</th>
+                                    <th>Created At</th>
+                                    <th>Options</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -157,45 +143,6 @@
 
 
 @include('includes/footer_start')
-
-<!-- Plugins js -->
-<script src="{{ URL::asset('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/select2/js/select2.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js')}}"
-        type="text/javascript"></script>
-
-<!-- Plugins Init js -->
-<script src="{{ URL::asset('assets/pages/form-advanced.js')}}"></script>
-
-<!-- Required datatable js -->
-<script src="{{ URL::asset('assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
-<!-- Buttons examples -->
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.buttons.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.bootstrap4.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/jszip.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/pdfmake.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/vfs_fonts.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.html5.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.print.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.colVis.min.js')}}"></script>
-<!-- Responsive examples -->
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.responsive.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/responsive.bootstrap4.min.js')}}"></script>
-
-<script src="{{ URL::asset('assets/plugins/sweet-alert2/sweetalert2.min.js')}}"></script>
-<script src="{{ URL::asset('assets/pages/sweet-alert.init.js')}}"></script>
-
-<!-- Datatable init js -->
-<script src="{{ URL::asset('assets/pages/datatables.init.js')}}"></script>
-
-<!-- Parsley js -->
-<script type="text/javascript" src="{{ URL::asset('assets/plugins/parsleyjs/parsley.min.js')}}"></script>
-<script src="{{ URL::asset('assets/js/bootstrap-notify.js')}}"></script>
-<script src="{{ URL::asset('assets/js/jquery.notify.min.js')}}"></script>
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -208,21 +155,7 @@
     $(document).on('focus', ':input', function () {
         $(this).attr('autocomplete', 'off');
     });
-    $('.modal').on('hidden.bs.modal', function () {
-        $('#errorAlert').hide();
-        $('#errorAlert').html('');
-        $('#errorAlert1').hide();
-        $('#errorAlert1').html('');
-        $('input').val('');
-    });
-    function adMethod(dataID, tableName) {
-
-        $.post('activateDeactivate', {id: dataID, table: tableName}, function (data) {
-
-        });
-    }
-
-
+    
     $(document).on('click','#viewItems', function () {
 
         var poId = $(this).data("id");

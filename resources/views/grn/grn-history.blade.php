@@ -1,22 +1,4 @@
 @include('includes/header_start')
-
-<link href="{{ URL::asset('assets/plugins/datatables/dataTables.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/datatables/buttons.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<!-- Responsive datatable examples -->
-<link href="{{ URL::asset('assets/plugins/datatables/responsive.bootstrap4.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/sweet-alert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css">
-
-<!-- Plugins css -->
-<link href="{{ URL::asset('assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css')}}" rel="stylesheet">
-<link href="{{ URL::asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}" rel="stylesheet">
-<link href="{{ URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css')}}" rel="stylesheet"/>
-<link href="{{ URL::asset('assets/css/custom_checkbox.css')}}" rel="stylesheet" type="text/css"/>
-<link href="{{ URL::asset('assets/css/jquery.notify.css')}}" rel="stylesheet" type="text/css">
-
-<meta name="csrf-token" content="{{ csrf_token() }}"/>
-
-
 @include('includes/header_end')
 
 
@@ -48,64 +30,65 @@
         <div class="col-lg-12">
             <div class="card m-b-20">
                 <div class="card-body">
-                    
+
 
                     <div class="table-rep-plugin">
                         <div class="table-responsive b-0" data-pattern="priority-columns">
-                            <table id="datatable"  class="table table-striped table-bordered data-table"
-                                    cellspacing="0"
-                                    width="100%">
+                            <table id="datatable" class="table table-striped table-bordered data-table" cellspacing="0"
+                                width="100%">
                                 <thead>
-                                <tr>
-                                    <th>GRN NO</th>
-                                    <th>SUPPLIER</th>
-                                    <th style="text-align: right">TOTAL</th>
-                                    <th style="text-align: right">PAID</th>
-                                   
-                                    <th>USER</th>
-                                    <th>DATE</th>
-                                    <th>OPTION</th>
-                                </tr>
+                                    <tr>
+                                        <th>GRN No</th>
+                                        <th>Supplier</th>
+                                        <th style="text-align: right">Total</th>
+                                        <th style="text-align: right">Paid</th>
+                                        <th>User</th>
+                                        <th>Date</th>
+                                        <th>Options</th>
+                                    </tr>
                                 </thead>
 
                                 <tbody>
-                              
-                                    @if(count($grnHistories)!=0)
-                                     
-                                    @foreach($grnHistories as $grnHistory)
-                                        <tr>
-                                            <td>{{ str_pad($grnHistory->idmaster_grn,5,'0',STR_PAD_LEFT) }}</td>
-                                            <td>{{$grnHistory->Supplier->company_name}}</td>
-                                            <td style="text-align: right">{{ number_format($grnHistory->total,2) }}</td>
-                                            <td style="text-align: right">{{ number_format($grnHistory->paid,2) }}</td>
-                                            <td>{{ $grnHistory->User->first_name }}</td>
-                                            <td>{{$grnHistory->date}}</td>
-                                            <td>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-success waves-effect btn-sm dropdown-toggle" type="button"
-                                                            id="dropdownMenuButton" data-toggle="dropdown"
-                                                            aria-haspopup="true" aria-expanded="false">
-                                                        Option
-                                                    </button>
-                                                    <div class="dropdown-menu"
-                                                         aria-labelledby="dropdownMenuButton">
-                                                        <a href="#" class="dropdown-item" data-toggle="modal"
-                                                           data-id="{{$grnHistory->idmaster_grn}}" id="grnId"
-                                                           data-target="#viewGrn">View Items</i>
-                                                        </a>
-                                                        <a href="#" class="dropdown-item" data-toggle="modal"
-                                                           data-id="{{$grnHistory->idmaster_grn}}" id="masterId"
-                                                           data-target="#viewMore">More</i>
-                                                        </a>
+
+                                    @if (count($grnHistories) != 0)
+
+                                        @foreach ($grnHistories as $grnHistory)
+                                            <tr>
+                                                <td>{{ str_pad($grnHistory->idmaster_grn, 5, '0', STR_PAD_LEFT) }}</td>
+                                                <td>{{ $grnHistory->Supplier->company_name }}</td>
+                                                <td style="text-align: right">{{ number_format($grnHistory->total, 2) }}
+                                                </td>
+                                                <td style="text-align: right">{{ number_format($grnHistory->paid, 2) }}
+                                                </td>
+                                                <td>{{ $grnHistory->User->first_name }}</td>
+                                                <td>{{ $grnHistory->date }}</td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button
+                                                            class="btn btn-success waves-effect btn-sm dropdown-toggle"
+                                                            type="button" id="dropdownMenuButton"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                            Option
+                                                        </button>
+                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                            <a href="#" class="dropdown-item" data-toggle="modal"
+                                                                data-id="{{ $grnHistory->idmaster_grn }}" id="grnId"
+                                                                data-target="#viewGrn">View Items</i>
+                                                            </a>
+                                                            <a href="#" class="dropdown-item" data-toggle="modal"
+                                                                data-id="{{ $grnHistory->idmaster_grn }}" id="masterId"
+                                                                data-target="#viewMore">More</i>
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endif
                                 </tbody>
                             </table>
-                           
+
                         </div>
                     </div>
                 </div>
@@ -115,15 +98,13 @@
 </div>
 
 <!--view more-->
-<div class="modal fade" id="viewMore" tabindex="-1"
-     role="dialog"
-     aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade" id="viewMore" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title mt-0">More</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">×
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                 </button>
             </div>
             <div class="modal-body">
@@ -132,9 +113,7 @@
 
                         <div class="table-rep-plugin">
                             <div class="table-responsive b-0" data-pattern="priority-columns">
-                                <table class="table table-striped table-bordered"
-                                       cellspacing="0"
-                                       width="100%">
+                                <table class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <tbody id="viewMoreArea">
 
                                     </tbody>
@@ -149,15 +128,13 @@
 </div>
 
 <!--view irems-->
-<div class="modal fade" id="viewGrn" tabindex="-1"
-     role="dialog"
-     aria-labelledby="mySmallModalLabel" aria-hidden="true">
+<div class="modal fade" id="viewGrn" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title mt-0">View Products</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">×
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                 </button>
             </div>
             <div class="modal-body">
@@ -166,15 +143,13 @@
 
                         <div class="table-rep-plugin">
                             <div class="table-responsive b-0" data-pattern="priority-columns">
-                                <table class="table table-striped table-bordered"
-                                       cellspacing="0"
-                                       width="100%">
+                                <table class="table table-striped table-bordered" cellspacing="0" width="100%">
                                     <thead>
-                                    <tr>
-                                        <th>PRODUCT</th>
-                                        <th>QTY</th>
-                                        <TH style="text-align: right">BUYING PRICE</TH>
-                                    </tr>
+                                        <tr>
+                                            <th>PRODUCT</th>
+                                            <th>QTY</th>
+                                            <TH style="text-align: right">BUYING PRICE</TH>
+                                        </tr>
                                     </thead>
                                     <tbody id="viewItem">
 
@@ -190,47 +165,8 @@
 </div>
 
 @include('includes/footer_start')
-
-<!-- Plugins js -->
-<script src="{{ URL::asset('assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/select2/js/select2.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-filestyle/js/bootstrap-filestyle.min.js')}}" type="text/javascript"></script>
-<script src="{{ URL::asset('assets/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js')}}"
-        type="text/javascript"></script>
-
-<!-- Plugins Init js -->
-<script src="{{ URL::asset('assets/pages/form-advanced.js')}}"></script>
-
-<!-- Required datatable js -->
-<script src="{{ URL::asset('assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.bootstrap4.min.js')}}"></script>
-<!-- Buttons examples -->
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.buttons.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.bootstrap4.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/jszip.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/pdfmake.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/vfs_fonts.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.html5.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.print.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/buttons.colVis.min.js')}}"></script>
-<!-- Responsive examples -->
-<script src="{{ URL::asset('assets/plugins/datatables/dataTables.responsive.min.js')}}"></script>
-<script src="{{ URL::asset('assets/plugins/datatables/responsive.bootstrap4.min.js')}}"></script>
-
-<script src="{{ URL::asset('assets/plugins/sweet-alert2/sweetalert2.min.js')}}"></script>
-<script src="{{ URL::asset('assets/pages/sweet-alert.init.js')}}"></script>
-
-<!-- Datatable init js -->
-<script src="{{ URL::asset('assets/pages/datatables.init.js')}}"></script>
-
-<!-- Parsley js -->
-<script type="text/javascript" src="{{ URL::asset('assets/plugins/parsleyjs/parsley.min.js')}}"></script>
-<script src="{{ URL::asset('assets/js/bootstrap-notify.js')}}"></script>
-<script src="{{ URL::asset('assets/js/jquery.notify.min.js')}}"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         $.ajaxSetup({
             headers: {
@@ -238,10 +174,10 @@
             }
         });
     });
-    $(document).on('focus', ':input', function () {
+    $(document).on('focus', ':input', function() {
         $(this).attr('autocomplete', 'off');
     });
-    $('.modal').on('hidden.bs.modal', function () {
+    $('.modal').on('hidden.bs.modal', function() {
         $('#errorAlert').hide();
         $('#errorAlert').html('');
         $('#errorAlert1').hide();
@@ -249,32 +185,40 @@
         $('input').val('');
         $(".select2").val('').trigger('change');
     });
+
     function adMethod(dataID, tableName) {
 
-        $.post('activateDeactivate', {id: dataID, table: tableName}, function (data) {
+        $.post('activateDeactivate', {
+            id: dataID,
+            table: tableName
+        }, function(data) {
 
         });
     }
-    $(document).on("wheel", "input[type=number]", function (e) {
+    $(document).on("wheel", "input[type=number]", function(e) {
         $(this).blur();
     });
 
-    $(document).on('click', '#grnId', function () {
+    $(document).on('click', '#grnId', function() {
         var grnId = $(this).data("id");
-        $.post('getGrnByID', {grnId: grnId}, function (data) {
+        $.post('getGrnByID', {
+            grnId: grnId
+        }, function(data) {
             $('#viewItem').html(data.tableData);
         });
     });
 
 
-    $(document).on('click', '#masterId', function () {
+    $(document).on('click', '#masterId', function() {
         var masterId = $(this).data("id");
 
-        $.post('getMoreByGrnID', {masterId: masterId}, function (data) {
+        $.post('getMoreByGrnID', {
+            masterId: masterId
+        }, function(data) {
             $('#viewMoreArea').html(data.tableData);
         });
     });
-    $(document).on('focus', ':input', function () {
+    $(document).on('focus', ':input', function() {
         $(this).attr('autocomplete', 'off');
     });
 </script>

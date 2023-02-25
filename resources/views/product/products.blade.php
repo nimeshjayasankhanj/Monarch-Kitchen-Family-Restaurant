@@ -38,7 +38,7 @@
                             <div class="form-group">
                                 <button type="button" class="btn btn-primary waves-effect float-right"
                                     data-toggle="modal" data-target="#addProductModal">
-                                    Add Product</button>
+                                    Add Ingredient</button>
 
                             </div>
                         </div>
@@ -50,12 +50,11 @@
                                 width="100%">
                                 <thead>
                                     <tr>
-                                        <th>CATEGORY</th>
-                                        <th>PRODUCT NAME</th>
-                                        <th>BUYING PRICE</th>
-
-                                        <th>STATUS</th>
-                                        <th>EDIT</th>
+                                        <th>Category</th>
+                                        <th>Ingredient Name</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Edit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -131,7 +130,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mt-0">Add Products</h5>
+                <h5 class="modal-title mt-0">Add Ingredient</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                 </button>
             </div>
@@ -158,7 +157,7 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Product Name<span style="color: red"> *</span></label>
+                            <label>Ingredient Name<span style="color: red"> *</span></label>
                             <input type="text" class="form-control" name="pName" id="pName" required
                                 placeholder="Product Name" />
                             <span class="text-danger" id="pNameError"></span>
@@ -186,7 +185,7 @@
                 <div class="row">
                     <div class="col-lg-4" style="padding-top: 14px">
                         <button type="button" class="btn btn-primary waves-effect " onclick="saveProduct()">
-                            Save Product</button>
+                            Save Ingredient</button>
                     </div>
                 </div>
             </div>
@@ -201,7 +200,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title mt-0">Edit Product</h5>
+                <h5 class="modal-title mt-0">Edit Ingredient</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                 </button>
             </div>
@@ -226,7 +225,7 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="form-group">
-                            <label>Product Name<span style="color: red"> *</span></label>
+                            <label>Ingredient Name<span style="color: red"> *</span></label>
                             <input type="text" class="form-control" name="uPName" id="uPName" required
                                 placeholder="Product Name" />
                             <span class="text-danger" id="uPNameError"></span>
@@ -254,7 +253,7 @@
                 <div class="row">
                     <div class="col-lg-4" style="padding-top: 14px">
                         <button type="submit" class="btn btn-warning waves-effect " onclick="updateProduct()">
-                            Update Product</button>
+                            Update Ingredient</button>
                     </div>
                 </div>
             </div>
@@ -370,7 +369,7 @@
                 $(".select2").val('').trigger('change');
                 notify({
                     type: "success", //alert | success | error | warning | info
-                    title: 'PRODUCT SAVED',
+                    title: 'INGREDIENT SAVED',
                     autoHide: true, //true | false
                     delay: 2500, //number ms
                     position: {
@@ -486,7 +485,7 @@
                 $(".select2").val('').trigger('change');
                 notify({
                     type: "success", //alert | success | error | warning | info
-                    title: 'PRODUCT UPDATED',
+                    title: 'INGREDIENT UPDATED',
                     autoHide: true, //true | false
                     delay: 2500, //number ms
                     position: {
