@@ -8,7 +8,7 @@
         <div class="card-body">
 
             <h3 class="text-center m-0">
-                <a href="index" class="logo logo-admin"><img src="assets/images/avatar-1.jpg" height="100"
+                <a href="index" class="logo logo-admin"><img src="assets/images/logo.jpeg" height="100"
                         alt="logo"></a>
             </h3>
 

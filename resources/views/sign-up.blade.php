@@ -18,7 +18,7 @@
                         <div class="row">
                             <div class="col-lg-6">
 
-                                <img src="assets/images/avatar-1.jpg" height="300px" alt="logo">
+                                <img src="assets/images/logo.jpeg" height="300px" alt="logo">
 
                             </div>
                             <div class="col-lg-6">

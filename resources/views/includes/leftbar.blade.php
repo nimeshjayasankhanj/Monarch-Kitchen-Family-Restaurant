@@ -17,7 +17,7 @@
                 <!--<a href="index" class="logo text-center">Fonik</a>-->
 
                 <a href="{{ URL::asset('index') }}" class="logo"><img
-                        src="{{ URL::asset('assets/images/Royal Laundry.png') }}" height="150" alt="logo"></a>
+                        src="{{ URL::asset('assets/images/logo.jpeg') }}" height="100" alt="logo"></a>
 
             </div>
         </div>

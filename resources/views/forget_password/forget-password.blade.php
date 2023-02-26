@@ -20,7 +20,7 @@
                         <div class="row">
                             <div class="col-lg-6">
 
-                                <img src="assets/images/logo_dark.png" height="300px" alt="logo">
+                                <img src="assets/images/logo.jpeg" height="200px" alt="logo">
 
                             </div>
                             <div class="col-lg-6">

@@ -45,11 +45,11 @@ $pdf->SetFont('Arial','B',8);
 
 $pdf->Cell($width,$height,'',0,1,'L');//Horizontal Space
 
-$pdf->Cell($width,$height/1.5,'SUN STAR HOLDINGS','0',1,'C');
+$pdf->Cell($width,$height/1.5,'Monarch Kitchen','0',1,'C');
 
 $pdf->SetFont('Arial','',7);//set font to arial, regular, 8pt
 
-$pdf->Cell($width,$height/1.5,'No 566/7/A,Aldeniya,Kadawatha,','0',1,'C');
+$pdf->Cell($width,$height/1.5,'No 85 Moratuwa-Piliyandala Rd, Piliyandala.','0',1,'C');
 $pdf->Cell($width,$height/1.5,'Sri Lanka','0',1,'C');
 
 $pdf->Cell($width,$height/10,'','0',1,'C');//Horizontal Line
